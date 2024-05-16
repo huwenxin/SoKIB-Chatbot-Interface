@@ -1,7 +1,7 @@
-# sokib
-Projekt mit Stadtverwaltung für KI-Chatbot mit Verbindung mit Geodaten. \
-Das Projekt wurde als API entwickelt. Die Fragen von den Benutzern können als HTTP Requests an die API geschickt. Die API verarbeitet die Requests und fragt die relevanten Geo-Informationen wie Naturschutzgebiet usw. über Geo-Daten-APIs ab. Außerdem werden noch relevante Informationen in der Wissensbasis (Vektor-Datenbank) gesucht und zurückgegeben.
-Geo-Informationen, zusammen mit Daten aus der Vektor-Datenbank, werden als zusätzliche Informationen an OpenAI APIs übergeben. Am Ende wird eine Antwort basiert auf der eingelieferten Informationen generiert und von der API zurückgegeben.
+# SoKIB
+Projekt mit der Stadtverwaltung Brandenburg a. d. H. für einen KI-Chatbot mit Verbindung mit Geodaten. \
+Das Projekt wurde als API entwickelt. Die Fragen von Benutzer:innen können als HTTP Requests an die API geschickt werden. Die API verarbeitet die Requests und fragt die relevanten Geo-Informationen wie Naturschutzgebiet usw. über Geo-Daten-APIs ab. Außerdem werden noch relevante Informationen in der Wissensbasis (Vektor-Datenbank) gesucht und zurückgegeben.
+Geo-Informationen, zusammen mit Daten aus der Vektor-Datenbank, werden als zusätzliche Informationen an OpenAI APIs übergeben. Am Ende wird eine Antwort basierend auf der übermittelten Informationen generiert und von der API zurückgegeben.
 
 ## 1. Verwendete Tools
 [OpenAI API](https://platform.openai.com/docs/api-reference)\
@@ -59,7 +59,7 @@ https://gdi.stadt-brandenburg.de/ws/bauleitplanung?TYPENAME=ms:Bauluecken_Flaech
 	</ogc:Intersects>
 </ogc:Filter>
 ```
-Der Filter prüft das Flurstück auf Überschneidungen mit Bauleitplan. Wenn ein Element mit dem Namen "gml:featureMember" zurückgibt, bedeutet es, eine Überschneidung ist zu finden. Der Bau ist dann nur unter bestimmten Bedingungen zulässig.
+Der Filter prüft das Flurstück auf Überschneidungen mit dem Bauleitplan. Wenn ein Element mit dem Namen "gml:featureMember" zurückgegeben wird, bedeutet es, dass es eine Überschneidung gibt. Der Bau ist dann nur unter bestimmten Bedingungen zulässig.
 
 \
 (3) Hole Informationen über Naturschutzgebiet des Flurstückes mit einer weiteren API. Beispiel:
@@ -78,14 +78,14 @@ https://inspire.brandenburg.de/services/schutzg_wfs?SERVICE=WFS&REQUEST=GetFeatu
 	</ogc:Intersects>
 </ogc:Filter>
 ```
-Ähnlich wie bei Überprüfung der Bauleitplanung, hier werden die Überschneidungen mit Naturschutzgebiet geprüft. Wenn eine Überschneidung festgelegt ist, dürfen keine Bauaktivitäten stattfinden. 
+Ähnlich wie bei der Überprüfung der Bauleitplanung, hier werden die Überschneidungen mit Naturschutzgebieten geprüft. Wenn eine Überschneidung festgestellt wird, dürfen keine Bauaktivitäten stattfinden. 
 
 ## 3. Prototyp Einrichten
 ### Vektordatenbank Pinecone einrichten
-Gehe auf https://www.pinecone.io/, erstelle ein Konto und melde sich an. Dann kann man zum Dashboard gehen und auf "Create Index" klicken. Dadurch gelangt man auf die Seite, auf der die erste Vektordatenbank erstellt werden kann (s. Bild).
+Auf https://www.pinecone.io/ gehen, ein Konto erstelle und sich anmelden. Dann kann man zum Dashboard gehen und auf "Create Index" klicken. Dadurch gelangt man auf die Seite, auf der die erste Vektordatenbank erstellt werden kann (s. Bild).
 ![Example Pinecone set up](/pic/pinecone.png)
 
-Hier muss man beachten, dass die Zahl bei Dimensions 1536 fest ist. Diese Nummer sollte mit dem Embedding Modell übereinstimmen, d. h. mit der Dimensionen von `text-embedding-ada-002`. Index sollte dann wie folgt aussehen:
+Hier muss man beachten, dass die Zahl bei Dimensions 1536 fest ist. Diese Nummer sollte mit dem Embedding Modell übereinstimmen, d. h. mit der Dimensionen von `text-embedding-ada-002`. Der Index sollte dann wie folgt aussehen:
 ![Example Pinecone index](/pic/index.png)
 
 Später müssen noch einige Umgebungsvariablen festgelegt werden. Die Umgebungsvariablen für Pinecone sind `PINECONE_API_KEY`, `PINECONE_ENVIRONMENT` und `PINECONE_INDEX`. `PINECONE_API_KEY` findet man im Dashboard bei "API Keys", `PINECONE_ENVIRONMENT` ist bei Index (wie das Bild oben zeigt) zu sehen, in diesem Beispiel ist "gop-starter", `PINECONE_INDEX` ist der Index-Name "gpt-test". 
@@ -109,7 +109,7 @@ Auf der GitHub-Seite sind die Konfigurationsschritte bereits beschrieben. Hier w
 	export PINECONE_ENVIRONMENT=<your_pinecone_region_name>
 	export PINECONE_INDEX=<your_index_name>
 
-10 Führe die Datenbank Interface lokal aus `poetry run start`\
+10 Führe das Datenbank Interface lokal aus `poetry run start`\
 11 Auf die API-Dokumentation zugreifen unter http://0.0.0.0:8000/docs und Endpoint testen
 
 ## 4. Projekt Starten
@@ -120,11 +120,11 @@ Auf der GitHub-Seite sind die Konfigurationsschritte bereits beschrieben. Hier w
 
 ### Dokumente in Vektordatenbank Speichern
 1 Öffne die Datei "database_utils.py"\
-2 Pfad zu den benötigten Dokumenten, die in der Vektordatenbank gespeichert werden, eingeben (s. Bild)
+2 Pfad zu den benötigten Dokumenten, die in der Vektordatenbank gespeichert werden sollen eingeben (s. Bild)
 ![Pfad bearbeiten](/pic/Pfad.png)\
 3 Ausführe `python database_utils.py`
 
-Wenn das Hochladen erfolgreich ist, werden Sie folgende Messages sehen
+Wenn das Hochladen erfolgreich ist, werden erscheinen folgende Messages:
 
 	file1 uploaded successfully.
 	file2 uploaded successfully.
@@ -133,13 +133,13 @@ Wenn das Hochladen erfolgreich ist, werden Sie folgende Messages sehen
 
 ### Chat Interface Starten
 Öffne die Datei "main.py". \
-Für die API Entwicklung wurde [FastAPI](https://fastapi.tiangolo.com) verwendet. Bei mancher Entwicklungsumgebung ist es möglich, die benötigten Pakete per Klick auf Fehlermeldung zu installieren. Wenn das nicht funktioniert, muss man die Pakete manuell installieren: \
-1 Ausführe in Terminal: `pip install "fastapi[all]"` \
-2 Server Starten: `uvicorn main:app --port 8888 --reload`. Um Konflikte zu vermeiden, wird der Server auf Port 8888 gestartet, weil Datenbank Interface schon Port 8000 besitzt. 
+Für die API Entwicklung wurde [FastAPI](https://fastapi.tiangolo.com) verwendet. Bei mancher Entwicklungsumgebung ist es möglich, die benötigten Pakete per Klick auf Fehlermeldungen zu installieren. Wenn das nicht funktioniert, muss man die Pakete manuell installieren: \
+1 Im Terminal ausführen: `pip install "fastapi[all]"` \
+2 Server Starten: `uvicorn main:app --port 8888 --reload`. Um Konflikte zu vermeiden, wird der Server auf Port 8888 gestartet, weil das Datenbank Interface schon Port 8000 besetzt. 
 
 ### HTTP Requests
-Um Requests zu schicken, wird die Methode `POST` genutzt, da die Informationen über Flur, Flurstück sowie der Text der konkreten Frage auch verschickt werden sollten. In der Datei "main.py" gibt es zwei Pfade: `/chat` und `/chatIBM`.
-`chatIBM` ist spezifisch für IBM Watsonx Assistant, um die komplexen Abfragen von IBM Watsonx Assistant zu verarbeiten, denn wir die Funktion anhand dieser Anwendung demonstrieren wollen. `/chat` ist allgemeiner für alle selbstentwickelten Chatbots geeignet. Request Body und Response sind beide in JSON Format. Das Request Body sollte dann wie folgt aussehen:\
+Um Requests zu schicken, wird die Methode `POST` genutzt, da die Informationen über Flur, Flurstück sowie der Text der konkreten Frage auch verschickt werden sollen. In der Datei "main.py" gibt es zwei Pfade: `/chat` und `/chatIBM`.
+`chatIBM` ist spezifisch für IBM watsonx Assistant, um die komplexen Abfragen von IBM watsonx Assistant zu verarbeiten, denn die Funktion prototypisch anhand dieser Anwendung demonstriert wird. `/chat` ist allgemeiner für alle selbstentwickelten Chatbots geeignet. Request Body und Response sind beide im JSON Format. Das Request Body sollte dann wie folgt aussehen:\
 ```
 {
     "flur": "093",
